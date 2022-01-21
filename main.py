@@ -63,7 +63,7 @@ def function_write_excel(food_list_final: List[List[str]], username_friend: str)
     elif delete_rows == False and food_list_final:
         idx_row_to_write = sheet.max_row + 1
         for rowNum in range(2, max_row):
-            if sheet.cell(rowNum, 1).value > date_script.strftime("%d/%m/%Y"):
+            if datetime.strptime(sheet.cell(rowNum, 1).value, "%d/%m/%Y").date() > date_script:
                 idx_row_to_write = rowNum
                 break
         sheet.insert_rows(idx_row_to_write, len(food_list_final))
