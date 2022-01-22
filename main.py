@@ -4,6 +4,7 @@ from datetime import datetime
 from openpyxl.utils import get_column_letter
 from my_config import *
 import os
+import pandas as pd
 
 
 def function_scraping(date_scrapping: datetime) -> List[List[str]]:
@@ -87,21 +88,29 @@ def function_write_excel(food_list_final: List[List[str]], username_friend: str)
 
 if __name__ == '__main__':
     if manual_date_mode == True:
-        date_script = manual_date
-        print("Manual date mode activated. Date : " + str(date_script.strftime("%d/%m/%Y")))
+        if len(manual_date) == 1:
+            date_script_array = manual_date
+            print("Manual date mode activated. Date : " + str(date_script_array[0].strftime("%d/%m/%Y")))
+        else:
+            date_script_array = pd.date_range(manual_date[0], manual_date[1], freq='d')
+            print("Manual date mode activated. Date : " + str(manual_date[0].strftime("%d/%m/%Y")) + " - "
+                  + str(manual_date[1].strftime("%d/%m/%Y")))
     else:
-        date_script = datetime.now().date()
-        print("Manual date mode disabled. Date : " + str(date_script.strftime("%d/%m/%Y")))
+        date_script_array = [datetime.now().date()]
+        print("Manual date mode disabled. Date : " + str(date_script_array[0].strftime("%d/%m/%Y")))
 
     print("Connexion with myfitnesspal..")
     client = myfitnesspal.Client(username, password=password)
 
-    for username_friend in username_friend_list:
-        print("\nScrape user : " + str(username_friend))
-        day = client.get_date(manual_date.year, manual_date.month, manual_date.day, username=username_friend)
-        food_list_final = function_scraping(date_script)
+    for date_script in date_script_array:
+        for username_friend in username_friend_list:
+            print("\nScrape user : " + str(username_friend))
+            if len(date_script_array) > 1:
+                print("Date : " + str(date_script.strftime("%d/%m/%Y")))
+            day = client.get_date(date_script.year, date_script.month, date_script.day, username=username_friend)
+            food_list_final = function_scraping(date_script)
 
-        function_write_excel(food_list_final, username_friend)
+            function_write_excel(food_list_final, username_friend)
 
     print("\nEND")
 

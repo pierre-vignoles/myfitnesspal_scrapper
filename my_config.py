@@ -17,4 +17,5 @@ safe_mode: bool = False
 
 ## Catching-up
 manual_date_mode: bool = True
-manual_date: date = date(2022, 1, 18)
+manual_date: List[date] = [date(2022, 1, 18), date(2022, 1, 20)]
+
